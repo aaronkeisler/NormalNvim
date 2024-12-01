@@ -38,7 +38,7 @@
 --       ## LANGUAGE IMPROVEMENTS
 --       -> guttentags_plus                [auto generate C/C++ tags]
 
-local is_windows = vim.fn.has('win32') == 1 -- true if on windows
+local is_windows = vim.fn.has("win32") == 1 -- true if on windows
 
 return {
   --  SNIPPETS ----------------------------------------------------------------
@@ -102,7 +102,7 @@ return {
           untracked = { text = get_icon("GitSign") },
         },
       }
-    end
+    end,
   },
 
   --  Git fugitive mergetool + [git commands]
@@ -196,18 +196,23 @@ return {
     config = function(_, opts)
       require("aerial").setup(opts)
       -- HACK: The first time you open aerial on a session, close all folds.
-      vim.api.nvim_create_autocmd({"FileType", "BufEnter"}, {
+      vim.api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
         desc = "Aerial: When aerial is opened, close all its folds.",
         callback = function()
           local is_aerial = vim.bo.filetype == "aerial"
-          local is_ufo_available = require("base.utils").is_available("nvim-ufo")
-          if is_ufo_available and is_aerial and vim.b.new_aerial_session == nil then
+          local is_ufo_available =
+            require("base.utils").is_available("nvim-ufo")
+          if
+            is_ufo_available
+            and is_aerial
+            and vim.b.new_aerial_session == nil
+          then
             vim.b.new_aerial_session = false
             require("aerial").tree_set_collapse_level(0, 0)
           end
         end,
       })
-    end
+    end,
   },
 
   -- Litee calltree [calltree]
@@ -215,25 +220,23 @@ return {
   -- https://github.com/ldelossa/litee-calltree.nvim
   -- press ? inside the panel to show help.
   {
-    'ldelossa/litee.nvim',
+    "ldelossa/litee.nvim",
     event = "User BaseFile",
     opts = {
       notify = { enabled = false },
       tree = {
-          icon_set = "default" -- "nerd", "codicons", "default", "simple"
+        icon_set = "default", -- "nerd", "codicons", "default", "simple"
       },
       panel = {
-          orientation = "bottom",
-          panel_size = 10,
+        orientation = "bottom",
+        panel_size = 10,
       },
     },
-    config = function(_, opts)
-      require('litee.lib').setup(opts)
-    end
+    config = function(_, opts) require("litee.lib").setup(opts) end,
   },
   {
-    'ldelossa/litee-calltree.nvim',
-    dependencies = 'ldelossa/litee.nvim',
+    "ldelossa/litee-calltree.nvim",
+    dependencies = "ldelossa/litee.nvim",
     event = "User BaseFile",
     opts = {
       on_open = "panel", -- or popout
@@ -242,11 +245,11 @@ return {
         expand = "<CR>",
         collapse = "c",
         collapse_all = "C",
-        jump = "<C-CR>"
+        jump = "<C-CR>",
       },
     },
     config = function(_, opts)
-      require('litee.calltree').setup(opts)
+      require("litee.calltree").setup(opts)
 
       -- Highlight only while on calltree
       vim.api.nvim_create_autocmd({ "WinEnter" }, {
@@ -257,16 +260,20 @@ return {
               vim.wo.colorcolumn = "0"
               vim.wo.foldcolumn = "0"
               vim.cmd("silent! PinBuffer") -- stickybuf.nvim
-              vim.cmd("silent! hi LTSymbolJump ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold")
-              vim.cmd("silent! hi LTSymbolJumpRefs ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold")
+              vim.cmd(
+                "silent! hi LTSymbolJump ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold"
+              )
+              vim.cmd(
+                "silent! hi LTSymbolJumpRefs ctermfg=015 ctermbg=110 cterm=italic,bold,underline guifg=#464646 guibg=#87afd7 gui=italic,bold"
+              )
             else
               vim.cmd("silent! highlight clear LTSymbolJump")
               vim.cmd("silent! highlight clear LTSymbolJumpRefs")
             end
           end, 100)
-        end
+        end,
       })
-    end
+    end,
   },
 
   --  CODE DOCUMENTATION ------------------------------------------------------
@@ -277,7 +284,7 @@ return {
     cmd = {
       "DookuGenerate",
       "DookuOpen",
-      "DookuAutoSetup"
+      "DookuAutoSetup",
     },
     opts = {},
   },
@@ -313,20 +320,42 @@ return {
   --  NOTE: In order for this plugin to work, you will have to set
   --        the next env var in your OS:
   --        OPENAI_API_KEY="my_key_here"
+  -- {
+  --   "dense-analysis/neural",
+  --   cmd = { "Neural" },
+  --   config = function()
+  --     require("neural").setup {
+  --       source = {
+  --         openai = {
+  --           api_key = vim.env.OPENAI_API_KEY,
+  --         },
+  --       },
+  --       ui = {
+  --         prompt_icon = require("base.utils").get_icon("PromptPrefix"),
+  --       },
+  --     }
+  --   end,
+  -- },
+
   {
-    "dense-analysis/neural",
-    cmd = { "Neural" },
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    enabled = vim.fn.has("win32") == 0,
+    event = "User BaseFile",
     config = function()
-      require("neural").setup {
-        source = {
-          openai = {
-            api_key = vim.env.OPENAI_API_KEY,
-          },
+      require("codecompanion").setup({
+        strategies = {
+          --NOTE: Change the adapter as required
+          chat = { adapter = "openai" },
+          inline = { adapter = "openai" },
         },
-        ui = {
-          prompt_icon = require("base.utils").get_icon("PromptPrefix"),
+        opts = {
+          log_level = "DEBUG",
         },
-      }
+      })
     end,
   },
 
@@ -353,7 +382,7 @@ return {
   {
     "NMAC427/guess-indent.nvim",
     event = "User BaseFile",
-    opts = {}
+    opts = {},
   },
 
   --  COMPILER ----------------------------------------------------------------
@@ -365,7 +394,7 @@ return {
       "CompilerOpen",
       "CompilerToggleResults",
       "CompilerRedo",
-      "CompilerStop"
+      "CompilerStop",
     },
     dependencies = { "stevearc/overseer.nvim" },
     opts = {},
@@ -390,10 +419,10 @@ return {
       "OverseerBuild",
       "OverseerQuickAction",
       "OverseerTaskAction",
-      "OverseerClearCache"
+      "OverseerClearCache",
     },
     opts = {
-     task_list = { -- the window that shows the results.
+      task_list = { -- the window that shows the results.
         direction = "bottom",
         min_height = 25,
         max_height = 25,
@@ -421,16 +450,16 @@ return {
   --  We currently ship most of them with nvim.
   {
     "mfussenegger/nvim-dap",
-    enabled = vim.fn.has "win32" == 0,
+    enabled = vim.fn.has("win32") == 0,
     event = "User BaseFile",
     config = function()
       local dap = require("dap")
 
       -- C#
       dap.adapters.coreclr = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/netcoredbg',
-        args = { '--interpreter=vscode' }
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/netcoredbg",
+        args = { "--interpreter=vscode" },
       }
       dap.configurations.cs = {
         {
@@ -438,7 +467,11 @@ return {
           name = "launch - netcoredbg",
           request = "launch",
           program = function() -- Ask the user what executable wants to debug
-            return vim.fn.input('Path to dll: ', vim.fn.getcwd() .. '/bin/Program.exe', 'file')
+            return vim.fn.input(
+              "Path to dll: ",
+              vim.fn.getcwd() .. "/bin/Program.exe",
+              "file"
+            )
           end,
         },
       }
@@ -455,9 +488,10 @@ return {
 
       -- Python
       dap.adapters.python = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/packages/debugpy/venv/bin/python',
-        args = { '-m', 'debugpy.adapter' },
+        type = "executable",
+        command = vim.fn.stdpath("data")
+          .. "/mason/packages/debugpy/venv/bin/python",
+        args = { "-m", "debugpy.adapter" },
       }
       dap.configurations.python = {
         {
@@ -470,36 +504,50 @@ return {
 
       -- Lua
       dap.adapters.nlua = function(callback, config)
-        callback({ type = 'server', host = config.host or "127.0.0.1", port = config.port or 8086 })
+        callback({
+          type = "server",
+          host = config.host or "127.0.0.1",
+          port = config.port or 8086,
+        })
       end
       dap.configurations.lua = {
         {
-          type = 'nlua',
-          request = 'attach',
+          type = "nlua",
+          request = "attach",
           name = "Attach to running Neovim instance",
-          program = function() pcall(require "osv".launch({ port = 8086 })) end,
-        }
+          program = function() pcall(require("osv").launch({ port = 8086 })) end,
+        },
       }
 
       -- C
       dap.adapters.codelldb = {
-        type = 'server',
+        type = "server",
         port = "${port}",
         executable = {
-          command = vim.fn.stdpath('data') .. '/mason/bin/codelldb',
+          command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
           args = { "--port", "${port}" },
-          detached = function() if is_windows then return false else return true end end,
-        }
+          detached = function()
+            if is_windows then
+              return false
+            else
+              return true
+            end
+          end,
+        },
       }
       dap.configurations.c = {
         {
-          name = 'Launch',
-          type = 'codelldb',
-          request = 'launch',
+          name = "Launch",
+          type = "codelldb",
+          request = "launch",
           program = function() -- Ask the user what executable wants to debug
-            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/bin/program', 'file')
+            return vim.fn.input(
+              "Path to executable: ",
+              vim.fn.getcwd() .. "/bin/program",
+              "file"
+            )
           end,
-          cwd = '${workspaceFolder}',
+          cwd = "${workspaceFolder}",
           stopOnEntry = false,
           args = {},
         },
@@ -511,24 +559,32 @@ return {
       -- Rust
       dap.configurations.rust = {
         {
-          name = 'Launch',
-          type = 'codelldb',
-          request = 'launch',
+          name = "Launch",
+          type = "codelldb",
+          request = "launch",
           program = function() -- Ask the user what executable wants to debug
-            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/bin/program', 'file')
+            return vim.fn.input(
+              "Path to executable: ",
+              vim.fn.getcwd() .. "/bin/program",
+              "file"
+            )
           end,
-          cwd = '${workspaceFolder}',
+          cwd = "${workspaceFolder}",
           stopOnEntry = false,
           args = {},
           initCommands = function() -- add rust types support (optional)
             -- Find out where to look for the pretty printer Python module
-            local rustc_sysroot = vim.fn.trim(vim.fn.system('rustc --print sysroot'))
+            local rustc_sysroot =
+              vim.fn.trim(vim.fn.system("rustc --print sysroot"))
 
-            local script_import = 'command script import "' .. rustc_sysroot .. '/lib/rustlib/etc/lldb_lookup.py"'
-            local commands_file = rustc_sysroot .. '/lib/rustlib/etc/lldb_commands'
+            local script_import = 'command script import "'
+              .. rustc_sysroot
+              .. '/lib/rustlib/etc/lldb_lookup.py"'
+            local commands_file = rustc_sysroot
+              .. "/lib/rustlib/etc/lldb_commands"
 
             local commands = {}
-            local file = io.open(commands_file, 'r')
+            local file = io.open(commands_file, "r")
             if file then
               for line in file:lines() do
                 table.insert(commands, line)
@@ -539,7 +595,7 @@ return {
 
             return commands
           end,
-        }
+        },
       }
 
       -- Go
@@ -547,12 +603,12 @@ return {
       -- * You have initialized your module with 'go mod init module_name'.
       -- * You :cd your project before running DAP.
       dap.adapters.delve = {
-        type = 'server',
-        port = '${port}',
+        type = "server",
+        port = "${port}",
         executable = {
-          command = vim.fn.stdpath('data') .. '/mason/packages/delve/dlv',
-          args = { 'dap', '-l', '127.0.0.1:${port}' },
-        }
+          command = vim.fn.stdpath("data") .. "/mason/packages/delve/dlv",
+          args = { "dap", "-l", "127.0.0.1:${port}" },
+        },
       }
       dap.configurations.go = {
         {
@@ -566,20 +622,20 @@ return {
           name = "Compile module and debug this file (test)",
           request = "launch",
           mode = "test",
-          program = "./${relativeFileDirname}"
+          program = "./${relativeFileDirname}",
         },
       }
 
       -- Dart / Flutter
       dap.adapters.dart = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/dart-debug-adapter',
-        args = { 'dart' }
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/dart-debug-adapter",
+        args = { "dart" },
       }
       dap.adapters.flutter = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/dart-debug-adapter',
-        args = { 'flutter' }
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/dart-debug-adapter",
+        args = { "flutter" },
       }
       dap.configurations.dart = {
         {
@@ -587,8 +643,8 @@ return {
           request = "launch",
           name = "Launch dart",
           dartSdkPath = "/opt/flutter/bin/cache/dart-sdk/", -- ensure this is correct
-          flutterSdkPath = "/opt/flutter",                  -- ensure this is correct
-          program = "${workspaceFolder}/lib/main.dart",     -- ensure this is correct
+          flutterSdkPath = "/opt/flutter", -- ensure this is correct
+          program = "${workspaceFolder}/lib/main.dart", -- ensure this is correct
           cwd = "${workspaceFolder}",
         },
         {
@@ -596,44 +652,44 @@ return {
           request = "launch",
           name = "Launch flutter",
           dartSdkPath = "/opt/flutter/bin/cache/dart-sdk/", -- ensure this is correct
-          flutterSdkPath = "/opt/flutter",                  -- ensure this is correct
-          program = "${workspaceFolder}/lib/main.dart",     -- ensure this is correct
+          flutterSdkPath = "/opt/flutter", -- ensure this is correct
+          program = "${workspaceFolder}/lib/main.dart", -- ensure this is correct
           cwd = "${workspaceFolder}",
-        }
+        },
       }
 
       -- Kotlin
       -- Kotlin projects have very weak project structure conventions.
       -- You must manually specify what the project root and main class are.
       dap.adapters.kotlin = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/kotlin-debug-adapter',
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/kotlin-debug-adapter",
       }
       dap.configurations.kotlin = {
         {
-          type = 'kotlin',
-          request = 'launch',
-          name = 'Launch kotlin program',
-          projectRoot = "${workspaceFolder}/app",     -- ensure this is correct
-          mainClass = "AppKt",                        -- ensure this is correct
+          type = "kotlin",
+          request = "launch",
+          name = "Launch kotlin program",
+          projectRoot = "${workspaceFolder}/app", -- ensure this is correct
+          mainClass = "AppKt", -- ensure this is correct
         },
       }
 
       -- Javascript / Typescript (firefox)
       dap.adapters.firefox = {
-        type = 'executable',
-        command = vim.fn.stdpath('data') .. '/mason/bin/firefox-debug-adapter',
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/firefox-debug-adapter",
       }
       dap.configurations.typescript = {
         {
-          name = 'Debug with Firefox',
-          type = 'firefox',
-          request = 'launch',
+          name = "Debug with Firefox",
+          type = "firefox",
+          request = "launch",
           reAttach = true,
-          url = 'http://localhost:4200', -- Write the actual URL of your project.
-          webRoot = '${workspaceFolder}',
-          firefoxExecutable = '/usr/bin/firefox'
-        }
+          url = "http://localhost:4200", -- Write the actual URL of your project.
+          webRoot = "${workspaceFolder}",
+          firefoxExecutable = "/usr/bin/firefox",
+        },
       }
       dap.configurations.javascript = dap.configurations.typescript
       dap.configurations.javascriptreact = dap.configurations.typescript
@@ -668,36 +724,39 @@ return {
 
       -- PHP
       dap.adapters.php = {
-        type = 'executable',
-        command = vim.fn.stdpath("data") .. '/mason/bin/php-debug-adapter',
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/php-debug-adapter",
       }
       dap.configurations.php = {
         {
-          type = 'php',
-          request = 'launch',
-          name = 'Listen for Xdebug',
-          port = 9000
-        }
+          type = "php",
+          request = "launch",
+          name = "Listen for Xdebug",
+          port = 9000,
+        },
       }
 
       -- Shell
       dap.adapters.bashdb = {
-        type = 'executable',
-        command = vim.fn.stdpath("data") .. '/mason/packages/bash-debug-adapter/bash-debug-adapter',
-        name = 'bashdb',
+        type = "executable",
+        command = vim.fn.stdpath("data")
+          .. "/mason/packages/bash-debug-adapter/bash-debug-adapter",
+        name = "bashdb",
       }
       dap.configurations.sh = {
         {
-          type = 'bashdb',
-          request = 'launch',
+          type = "bashdb",
+          request = "launch",
           name = "Launch file",
           showDebugOutput = true,
-          pathBashdb = vim.fn.stdpath("data") .. '/mason/packages/bash-debug-adapter/extension/bashdb_dir/bashdb',
-          pathBashdbLib = vim.fn.stdpath("data") .. '/mason/packages/bash-debug-adapter/extension/bashdb_dir',
+          pathBashdb = vim.fn.stdpath("data")
+            .. "/mason/packages/bash-debug-adapter/extension/bashdb_dir/bashdb",
+          pathBashdbLib = vim.fn.stdpath("data")
+            .. "/mason/packages/bash-debug-adapter/extension/bashdb_dir",
           trace = true,
           file = "${file}",
           program = "${file}",
-          cwd = '${workspaceFolder}',
+          cwd = "${workspaceFolder}",
           pathCat = "cat",
           pathBash = "/bin/bash",
           pathMkfifo = "mkfifo",
@@ -705,28 +764,28 @@ return {
           args = {},
           env = {},
           terminalKind = "integrated",
-        }
+        },
       }
 
       -- Elixir
       dap.adapters.mix_task = {
-        type = 'executable',
-        command = vim.fn.stdpath("data") .. '/mason/bin/elixir-ls-debugger',
-        args = {}
+        type = "executable",
+        command = vim.fn.stdpath("data") .. "/mason/bin/elixir-ls-debugger",
+        args = {},
       }
       dap.configurations.elixir = {
         {
           type = "mix_task",
           name = "mix test",
-          task = 'test',
+          task = "test",
           taskArgs = { "--trace" },
           request = "launch",
           startApps = true, -- for Phoenix projects
           projectDir = "${workspaceFolder}",
           requireFiles = {
             "test/**/test_helper.exs",
-            "test/**/*_test.exs"
-          }
+            "test/**/*_test.exs",
+          },
         },
       }
     end, -- of dap config
@@ -748,12 +807,10 @@ return {
     opts = { floating = { border = "rounded" } },
     config = function(_, opts)
       local dap, dapui = require("dap"), require("dapui")
-      dap.listeners.after.event_initialized["dapui_config"] = function(
-      )
+      dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
       end
-      dap.listeners.before.event_terminated["dapui_config"] = function(
-      )
+      dap.listeners.before.event_terminated["dapui_config"] = function()
         dapui.close()
       end
       dap.listeners.before.event_exited["dapui_config"] = function()
@@ -834,11 +891,15 @@ return {
     end,
     config = function(_, opts)
       -- get neotest namespace (api call creates or returns namespace)
-      local neotest_ns = vim.api.nvim_create_namespace "neotest"
+      local neotest_ns = vim.api.nvim_create_namespace("neotest")
       vim.diagnostic.config({
         virtual_text = {
           format = function(diagnostic)
-            local message = diagnostic.message:gsub("\n", " "):gsub("\t", " "):gsub("%s+", " "):gsub("^%s+", "")
+            local message = diagnostic.message
+              :gsub("\n", " ")
+              :gsub("\t", " ")
+              :gsub("%s+", " ")
+              :gsub("^%s+", "")
             return message
           end,
         },
@@ -890,16 +951,155 @@ return {
       -- NOTE: On vimplugins we use config instead of opts.
       vim.g.gutentags_plus_nomap = 1
       vim.g.gutentags_resolve_symlinks = 1
-      vim.g.gutentags_cache_dir = vim.fn.stdpath "cache" .. "/tags"
+      vim.g.gutentags_cache_dir = vim.fn.stdpath("cache") .. "/tags"
       vim.api.nvim_create_autocmd("FileType", {
         desc = "Auto generate C/C++ tags",
         callback = function()
           local is_c = vim.bo.filetype == "c" or vim.bo.filetype == "cpp"
-          if is_c then vim.g.gutentags_enabled = 1
-          else vim.g.gutentags_enabled = 0 end
+          if is_c then
+            vim.g.gutentags_enabled = 1
+          else
+            vim.g.gutentags_enabled = 0
+          end
         end,
       })
     end,
   },
 
+  {
+    "epwalsh/obsidian.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "hrsh7th/nvim-cmp",
+      "nvim-telescope/telescope.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      -- "preservim/vim-markdown",
+    },
+    -- event = {
+    --   "BufReadPre " .. vim.fn.expand("~") .. "/c/second-brain/**.md",
+    --   "BufNewFile " .. vim.fn.expand("~") .. "/c/second-brain/**.md",
+    -- },
+    cmd = {
+      "ObsidianOpen",
+      "ObsidianNew",
+      "ObsidianQuickSwitch",
+      "ObsidianFollowLink",
+      "ObsidianBacklinks",
+      "ObsidianToday",
+      "ObsidianYesterday",
+      "ObsidianTemplate",
+      "ObsidianSearch",
+      "ObsidianLink",
+      "ObsidianLinkNew",
+    },
+
+    opts = {
+      dir = "~/Documents/devbook/", -- no need to call 'vim.fn.expand' here
+      completion = { nvim_cmp = true },
+
+      daily_notes = {
+        folder = "periodic/daily",
+        -- Optional, if you want to change the date format for the ID of daily notes.
+        -- date_format = "%Y-%m-%d",
+        -- Optional, if you want to change the date format of the default alias of daily notes.
+        -- alias_format = "%B %-d, %Y",
+      },
+
+      disable_frontmatter = true,
+
+      -- TODO: configure to my liking
+      -- Optional, alternatively you can customize the frontmatter data.
+      note_frontmatter_func = function(note)
+        -- This is equivalent to the default frontmatter function.
+        -- local out = { id = note.id, aliases = note.aliases, tags = note.tags }
+        -- -- `note.metadata` contains any manually added fields in the frontmatter.
+        -- -- So here we just make sure those fields are kept in the frontmatter.
+        -- if note.metadata ~= nil and require("obsidian").util.table_length(note.metadata) > 0 then
+        --   for k, v in pairs(note.metadata) do
+        --     out[k] = v
+        --   end
+        -- end
+        -- return out
+      end,
+
+      -- Optional, for templates (see below).
+      templates = {
+        subdir = "assets/tpl",
+        date_format = "%Y-%m-%d-%a",
+        time_format = "%H:%M",
+      },
+
+      follow_url_func = function(url) vim.fn.jobstart({ "open", url }) end,
+
+      -- Optional, set to true if you use the Obsidian Advanced URI plugin.
+      -- https://github.com/Vinzent03/obsidian-advanced-uri
+      use_advanced_uri = true,
+
+      -- Optional, set to true to force ':ObsidianOpen' to bring the app to the foreground.
+      open_app_foreground = true,
+      ui = {
+        enable = true, -- set to false to disable all additional syntax features
+        update_debounce = 200, -- update delay after a text change (in milliseconds)
+        -- Define how various check-boxes are displayed
+        checkboxes = {
+          -- NOTE: the 'char' value has to be a single character, and the highlight groups are defined below.
+          [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
+          ["x"] = { char = "", hl_group = "ObsidianDone" },
+          [">"] = { char = "", hl_group = "ObsidianRightArrow" },
+          ["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
+          -- Replace the above with this if you don't have a patched font:
+          -- [" "] = { char = "☐", hl_group = "ObsidianTodo" },
+          -- ["x"] = { char = "✔", hl_group = "ObsidianDone" },
+
+          -- You can also add more custom ones...
+        },
+        external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+        -- Replace the above with this if you don't have a patched font:
+        -- external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+        reference_text = { hl_group = "ObsidianRefText" },
+        highlight_text = { hl_group = "ObsidianHighlightText" },
+        tags = { hl_group = "ObsidianTag" },
+        hl_groups = {
+          -- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.
+          ObsidianTodo = { bold = true, fg = "#f78c6c" },
+          ObsidianDone = { bold = true, fg = "#89ddff" },
+          ObsidianRightArrow = { bold = true, fg = "#f78c6c" },
+          ObsidianTilde = { bold = true, fg = "#ff5370" },
+          ObsidianRefText = { underline = true, fg = "#c792ea" },
+          ObsidianExtLinkIcon = { fg = "#c792ea" },
+          ObsidianTag = { italic = true, fg = "#89ddff" },
+          ObsidianHighlightText = { bg = "#75662e" },
+        },
+      },
+    },
+
+    -- mappings = {
+    --   ["gf"] = require("obsidian.mapping").gf_passthrough(),
+    -- },
+
+    config = function(_, opts)
+      require("obsidian").setup(opts)
+      vim.keymap.set("n", "gd", function()
+        if require("obsidian").util.cursor_on_markdown_link() then
+          return "<cmd>ObsidianFollowLink<CR>"
+        else
+          return "gd"
+        end
+      end, { noremap = false, expr = true })
+    end,
+  },
+
+  {
+    "linrongbin16/gitlinker.nvim",
+    cmd = "GitLink",
+    opts = {},
+    keys = {
+      {
+        "<leader>gy",
+        function() vim.cmd("GitLink") end,
+        desc = "Yank git link",
+        mode = "n", -- normal mode
+      },
+    },
+  },
 } -- end of return

@@ -153,7 +153,7 @@ return {
       vim.cmd("highlight DashboardHeader guifg=#F7778F")
 
       -- If yazi is not installed, don't show the button.
-      local is_yazi_installed = vim.fn.executable("ya") == 1
+      local is_yazi_installed = vim.fn.executable("yazi") == 1
       local yazi_button = dashboard.button("r", get_icon("GreeterYazi") .. " Yazi", "<cmd>Yazi<CR>")
       if not is_yazi_installed then yazi_button = nil end
 
@@ -173,6 +173,10 @@ return {
         dashboard.button("p",
           get_icon("GreeterProjects") .. " Projects",
           "<cmd>Telescope projects<CR>"),
+
+        dashboard.button("o",
+          get_icon("DefaultFile") .. " Obsidian",
+          "<cmd>ObsidianQuickSwitch<CR>"),
         dashboard.button("", ""),
         dashboard.button("q", "   Quit", "<cmd>exit<CR>"),
       }
