@@ -121,6 +121,7 @@ return {
   GreeterYazi = "🦆",
   GreeterSessions = "🔎",
   GreeterProjects = "💼",
+  GreeterNotes = "󱉟",
   GreeterPlug = "",
 
   -- Mason

@@ -175,7 +175,7 @@ return {
           "<cmd>Telescope projects<CR>"),
 
         dashboard.button("o",
-          get_icon("DefaultFile") .. " Obsidian",
+          get_icon("GreeterNotes") .. "  Obsidian",
           "<cmd>ObsidianQuickSwitch<CR>"),
         dashboard.button("", ""),
         dashboard.button("q", "   Quit", "<cmd>exit<CR>"),
