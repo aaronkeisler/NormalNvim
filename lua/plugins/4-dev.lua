@@ -337,25 +337,34 @@ return {
   --   end,
   -- },
 
+  -- {
+  --   "olimorris/codecompanion.nvim",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-treesitter/nvim-treesitter",
+  --   },
+  --   enabled = vim.fn.has("win32") == 0,
+  --   event = "User BaseFile",
+  --   config = function()
+  --     require("codecompanion").setup({
+  --       strategies = {
+  --         --NOTE: Change the adapter as required
+  --         chat = { adapter = "openai" },
+  --         inline = { adapter = "openai" },
+  --       },
+  --       opts = {
+  --         log_level = "DEBUG",
+  --       },
+  --     })
+  --   end,
+  -- },
+
   {
-    "olimorris/codecompanion.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    enabled = vim.fn.has("win32") == 0,
-    event = "User BaseFile",
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
     config = function()
-      require("codecompanion").setup({
-        strategies = {
-          --NOTE: Change the adapter as required
-          chat = { adapter = "openai" },
-          inline = { adapter = "openai" },
-        },
-        opts = {
-          log_level = "DEBUG",
-        },
-      })
+      require("copilot").setup({})
     end,
   },
 

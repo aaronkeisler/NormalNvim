@@ -137,7 +137,7 @@ if not is_android then
   maps.x["<C-y>"] = { '"+y<esc>', desc = "Copy to cliboard" }
   -- maps.n["<C-d>"] = { '"+y<esc>dd', desc = "Copy to clipboard and delete line" }
   -- maps.x["<C-d>"] = { '"+y<esc>dd', desc = "Copy to clipboard and delete line" }
-  maps.n["<C-p>"] = { '"+p<esc>', desc = "Paste from clipboard" }
+  -- maps.n["<C-p>"] = { '"+p<esc>', desc = "Paste from clipboard" }
 end
 
 -- Make 'c' key not copy to clipboard when changing a character.
@@ -512,26 +512,26 @@ maps.n["<S-Up>"] = {
   function() vim.api.nvim_feedkeys("7k", "n", true) end,
   desc = "Fast move up",
 }
-maps.n["<S-PageDown>"] = {
+maps.n["<C-n>"] = {
   function()
     local current_line = vim.fn.line(".")
     local total_lines = vim.fn.line("$")
-    local target_line = current_line + 1 + math.floor(total_lines * 0.20)
+    local target_line = current_line + 1 + math.floor(total_lines * 0.10)
     if target_line > total_lines then target_line = total_lines end
     vim.api.nvim_win_set_cursor(0, { target_line, 0 })
     vim.cmd("normal! zz")
   end,
   desc = "Page down exactly a 20% of the total size of the buffer",
 }
-maps.n["<S-PageUp>"] = {
+maps.n["<C-p>"] = {
   function()
     local current_line = vim.fn.line(".")
-    local target_line = current_line - 1 - math.floor(vim.fn.line("$") * 0.20)
+    local target_line = current_line - 1 - math.floor(vim.fn.line("$") * 0.10)
     if target_line < 1 then target_line = 1 end
     vim.api.nvim_win_set_cursor(0, { target_line, 0 })
     vim.cmd("normal! zz")
   end,
-  desc = "Page up exactly 20% of the total size of the buffer",
+  desc = "Page up exactly 10% of the total size of the buffer",
 }
 
 -- cmdline autocompletion ---------------------------------------------------
@@ -705,9 +705,13 @@ end
 -- file browsers ------------------------------------
 -- yazi
 if is_available("yazi.nvim") and vim.fn.executable("yazi") == 1 then
-  maps.n["<leader>r"] = {
+  maps.n["<leader>-"] = {
     -- TODO: use 'Yazi toggle' instead once yazi v0.4.0 is released.
-    "<cmd>Yazi<CR>",
+    "<cmd>Yazi toggle<CR>",
+    desc = "File browser",
+  }
+  maps.n["<leader>cw"] = {
+    "<cmd>Yazi cwd<CR>",
     desc = "File browser",
   }
 end
@@ -894,7 +898,7 @@ if is_available("telescope.nvim") then
     function() require("telescope.builtin").buffers() end,
     desc = "Find buffers",
   }
-  maps.n["<leader>fw"] = {
+  maps.x["<leader>fw"] = {
     function() require("telescope.builtin").grep_string() end,
     desc = "Find word under cursor in project",
   }
@@ -903,16 +907,16 @@ if is_available("telescope.nvim") then
     desc = "Find commands",
   }
   -- Let's disable this. It is way too imprecise. Use rnvimr instead.
-  -- maps.n["<leader>ff"] = {
-  --   function()
-  --     require("telescope.builtin").find_files { hidden = true, no_ignore = true }
-  --   end,
-  --   desc = "Find all files",
-  -- }
-  -- maps.n["<leader>fF"] = {
-  --   function() require("telescope.builtin").find_files() end,
-  --   desc = "Find files (no hidden)",
-  -- }
+  maps.n["<leader>ff"] = {
+    function()
+      require("telescope.builtin").find_files { hidden = true, no_ignore = true }
+    end,
+    desc = "Find all files",
+  }
+  maps.n["<leader>fF"] = {
+    function() require("telescope.builtin").find_files() end,
+    desc = "Find files (no hidden)",
+  }
   maps.n["<leader>fh"] = {
     function() require("telescope.builtin").help_tags() end,
     desc = "Find help",
@@ -952,7 +956,7 @@ if is_available("telescope.nvim") then
     end,
     desc = "Find themes",
   }
-  maps.n["<leader>ff"] = {
+  maps.n["<leader>fw"] = {
     function()
       require("telescope.builtin").live_grep({
         additional_args = function(args)
@@ -963,10 +967,10 @@ if is_available("telescope.nvim") then
     end,
     desc = "Find words in project",
   }
-  maps.n["<leader>fF"] = {
-    function() require("telescope.builtin").live_grep() end,
-    desc = "Find words in project (no hidden)",
-  }
+  -- maps.n["<leader>fF"] = {
+  --   function() require("telescope.builtin").live_grep() end,
+  --   desc = "Find words in project (no hidden)",
+  -- }
   maps.n["<leader>f/"] = {
     function() require("telescope.builtin").current_buffer_fuzzy_find() end,
     desc = "Find words in current buffer",
